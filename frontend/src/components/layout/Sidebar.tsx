@@ -21,42 +21,49 @@ const Sidebar = () => {
   const [unreadCount, setUnreadCount] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!accessToken || !user?.email_verified) return
+    if (!accessToken || !user?.email_verified || avatarUrl) return
 
     let active = true
-    profileService
-      .getProfile()
-      .then((profile) => {
-        if (active) {
-          setProfile(profile)
-        }
-      })
-      .catch(() => {
-        // Ignore profile load errors in navigation UI.
-      })
+    const timer = setTimeout(() => {
+      profileService
+        .getProfile()
+        .then((profile) => {
+          if (active) {
+            setProfile(profile)
+          }
+        })
+        .catch(() => {
+          // Ignore profile load errors in navigation UI.
+        })
+    }, 100)
 
     return () => {
       active = false
+      clearTimeout(timer)
     }
-  }, [accessToken, user, setProfile])
+  }, [accessToken, user?.email_verified, avatarUrl, setProfile])
 
   useEffect(() => {
     if (!accessToken || !user?.email_verified) return
     let active = true
-    notificationService
-      .getUnreadCount()
-      .then((data) => {
-        if (active) {
-          setUnreadCount(data.unread_count)
-        }
-      })
-      .catch(() => {
-        // Ignore badge load errors.
-      })
+    const timer = setTimeout(() => {
+      notificationService
+        .getUnreadCount()
+        .then((data) => {
+          if (active) {
+            setUnreadCount(data.unread_count)
+          }
+        })
+        .catch(() => {
+          // Ignore badge load errors.
+        })
+    }, 200)
+    
     return () => {
       active = false
+      clearTimeout(timer)
     }
-  }, [accessToken, user])
+  }, [accessToken, user?.email_verified])
 
   const navItems = [
     { href: '/Dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -107,6 +114,7 @@ const Sidebar = () => {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className={
                   active
                     ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 text-primary group'

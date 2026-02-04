@@ -94,6 +94,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={false}
                   className={
                     active
                       ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary'
@@ -111,6 +112,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
             <Link
               href="/Profile"
+              prefetch={false}
               className="flex items-center gap-3 px-2 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">

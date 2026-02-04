@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import MobileSidebar from '@/components/layout/MobileSidebar'
@@ -63,4 +63,4 @@ const AppShell = ({
   )
 }
 
-export default AppShell
+export default memo(AppShell)

@@ -43,8 +43,9 @@ const AuthGate = ({ children }: AuthGateProps) => {
       }
     }
 
-    router.replace('/Login')
-  }, [accessToken, user, router, setTokens, setUser])
+    const timer = setTimeout(() => router.replace('/Login'), 100)
+    return () => clearTimeout(timer)
+  }, [accessToken, user?.email_verified, router, setTokens, setUser])
 
   useEffect(() => {
     let active = true
@@ -55,6 +56,10 @@ const AuthGate = ({ children }: AuthGateProps) => {
       }
 
       hasFetchedProfile.current = true
+      
+      // Delay profile fetch to not block initial render
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
       try {
         const profile = await profileService.getProfile()
         if (active) {
@@ -70,7 +75,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
     return () => {
       active = false
     }
-  }, [accessToken, user, setProfile])
+  }, [accessToken, user?.email_verified, setProfile])
 
   if (!ready) {
     return (
