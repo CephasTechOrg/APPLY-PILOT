@@ -1,0 +1,61 @@
+{
+  "id": "compact",
+  "name": "Compact Georgia",
+  "type": "resume",
+  "description": "A classic, single-page resume template optimized for maximum content density. Features elegant Georgia serif typography, organized sections, and print-optimized spacing. Perfect for experienced professionals who need to fit extensive experience on one page.",
+  "supportedPurposes": [
+    "general",
+    "technical",
+    "academic",
+    "professional"
+  ],
+  "defaultTokens": {
+    "fontSize": "11pt",
+    "fontFamily": "Georgia, serif",
+    "primaryColor": "#333333",
+    "secondaryColor": "#555555",
+    "accentColor": "#333333"
+  },
+  "features": [
+    "Single-page optimized",
+    "Serif typography (Georgia)",
+    "Compact spacing for maximum content",
+    "Four-column coursework layout",
+    "Custom bullet points",
+    "Print-optimized",
+    "Mobile responsive",
+    "Auto page-fit detection",
+    "Built-in print button",
+    "FontAwesome icons for contact info",
+    "Small-caps section headers",
+    "Underlined section dividers"
+  ],
+  "sections": [
+    "basics",
+    "education",
+    "coursework",
+    "work",
+    "projects",
+    "skills",
+    "volunteer"
+  ],
+  "customSections": {
+    "coursework": {
+      "title": "Relevant Coursework",
+      "description": "Displays courses in a 4-column grid layout",
+      "required": false
+    }
+  },
+  "previewImage": "preview.png",
+  "author": "Custom",
+  "version": "1.0.0",
+  "tags": [
+    "compact",
+    "serif",
+    "single-page",
+    "traditional",
+    "dense",
+    "professional",
+    "academic"
+  ]
+}

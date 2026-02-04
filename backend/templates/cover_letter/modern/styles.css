@@ -1,0 +1,210 @@
+/* Modern Cover Letter Template - Clean sans-serif with accent colors */
+
+:root {
+  --font-family: 'Inter', 'Segoe UI', sans-serif;
+  --font-size-base: 11pt;
+  --font-size-name: 24pt;
+  --font-size-headline: 12pt;
+  --line-height: 1.65;
+  --color-text: #1f2937;
+  --color-accent: #2563eb;
+  --color-muted: #6b7280;
+  --color-light: #f3f4f6;
+  --spacing-section: 28px;
+  --spacing-paragraph: 14px;
+  --page-margin: 0.85in;
+  --accent-bar-height: 6px;
+}
+
+/* Spacing variants */
+.spacing-compact {
+  --spacing-section: 20px;
+  --spacing-paragraph: 10px;
+  --line-height: 1.5;
+  --font-size-name: 22pt;
+}
+
+.spacing-comfortable {
+  --spacing-section: 32px;
+  --spacing-paragraph: 16px;
+  --line-height: 1.75;
+}
+
+/* Font variants */
+.font-inter { --font-family: 'Inter', 'Segoe UI', sans-serif; }
+.font-roboto { --font-family: 'Roboto', 'Arial', sans-serif; }
+.font-georgia { --font-family: 'Georgia', serif; }
+
+/* Accent color variants */
+.accent-neutral { --color-accent: #374151; }
+.accent-blue { --color-accent: #2563eb; }
+.accent-green { --color-accent: #059669; }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background: white;
+}
+
+.cover-letter {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: var(--page-margin);
+  padding-top: 0;
+}
+
+/* Header with accent bar */
+.header {
+  margin-bottom: var(--spacing-section);
+}
+
+.accent-bar {
+  height: var(--accent-bar-height);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent) 40%, transparent);
+  margin-bottom: var(--spacing-section);
+}
+
+.header-content {
+  padding: 0 4px;
+}
+
+.sender-name {
+  font-size: var(--font-size-name);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.headline {
+  font-size: var(--font-size-headline);
+  color: var(--color-accent);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 10pt;
+}
+
+.contact-item {
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.contact-item:hover {
+  color: var(--color-accent);
+}
+
+/* Meta info section */
+.meta-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-section);
+  padding: 16px 20px;
+  background: var(--color-light);
+  border-radius: 8px;
+}
+
+.date {
+  font-size: 10pt;
+  color: var(--color-muted);
+}
+
+.recipient {
+  text-align: right;
+}
+
+.recipient .company {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.recipient .position {
+  font-size: 10pt;
+  color: var(--color-accent);
+}
+
+/* Letter body */
+.letter-body {
+  margin-bottom: var(--spacing-section);
+}
+
+.salutation {
+  font-weight: 600;
+  margin-bottom: var(--spacing-paragraph);
+  color: var(--color-text);
+}
+
+.opening,
+.body-paragraph,
+.closing {
+  margin-bottom: var(--spacing-paragraph);
+}
+
+.opening {
+  font-weight: 500;
+}
+
+.closing {
+  margin-top: calc(var(--spacing-section) * 0.75);
+}
+
+/* Signature */
+.signature {
+  margin-top: calc(var(--spacing-section) * 1.25);
+}
+
+.sign-off {
+  color: var(--color-muted);
+  margin-bottom: 8px;
+}
+
+.signature-line {
+  width: 150px;
+  height: 2px;
+  background: var(--color-accent);
+  margin: 16px 0;
+}
+
+.sender-signature {
+  font-weight: 700;
+  font-size: 13pt;
+  color: var(--color-text);
+}
+
+/* Print styles */
+@media print {
+  .cover-letter {
+    padding: 0;
+    padding-top: 0;
+  }
+  
+  .accent-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .meta-info {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  @page {
+    margin: var(--page-margin);
+    margin-top: 0.5in;
+    size: letter;
+  }
+}

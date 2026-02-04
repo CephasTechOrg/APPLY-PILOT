@@ -1,0 +1,13 @@
+{
+  "name": "Modern",
+  "slug": "modern",
+  "description": "Contemporary design with accent colors and clean typography",
+  "preview_image": null,
+  "supported_purposes": ["tech", "startup", "creative", "marketing", "design"],
+  "default_tokens": {
+    "fontFamily": "Inter",
+    "spacing": "comfortable",
+    "accentColor": "blue"
+  },
+  "features": ["modern", "clean", "tech-friendly", "accent-colors"]
+}

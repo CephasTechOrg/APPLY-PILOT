@@ -1,0 +1,13 @@
+{
+  "name": "Creative",
+  "slug": "creative",
+  "description": "Bold two-column layout with colored sidebar for creative professionals",
+  "preview_image": null,
+  "supported_purposes": ["design", "creative", "marketing", "media", "startup"],
+  "default_tokens": {
+    "fontFamily": "Inter",
+    "spacing": "comfortable",
+    "accentColor": "blue"
+  },
+  "features": ["creative", "bold", "two-column", "sidebar", "visual-impact"]
+}

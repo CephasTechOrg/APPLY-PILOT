@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+  <div class="cover-letter">
+    <!-- Creative header with side accent -->
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-content">
+          <h1 class="sender-name">{{ profile.fullName or content.sender_name or "Your Name" }}</h1>
+          {% if profile.headline %}
+          <p class="tagline">{{ profile.headline }}</p>
+          {% endif %}
+          
+          {% if profile.contact %}
+          <div class="contact-section">
+            {% if profile.contact.email %}
+            <div class="contact-item">
+              <span class="label">Email</span>
+              <span class="value">{{ profile.contact.email }}</span>
+            </div>
+            {% endif %}
+            {% if profile.contact.phone %}
+            <div class="contact-item">
+              <span class="label">Phone</span>
+              <span class="value">{{ profile.contact.phone }}</span>
+            </div>
+            {% endif %}
+            {% if profile.contact.location %}
+            <div class="contact-item">
+              <span class="label">Location</span>
+              <span class="value">{{ profile.contact.location }}</span>
+            </div>
+            {% endif %}
+            {% if profile.contact.portfolio %}
+            <div class="contact-item">
+              <span class="label">Portfolio</span>
+              <span class="value">{{ profile.contact.portfolio }}</span>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          
+          <div class="date-section">
+            <span class="label">Date</span>
+            <span class="value">{{ current_date }}</span>
+          </div>
+        </div>
+      </aside>
+      
+      <main class="main-content">
+        <!-- Recipient and position -->
+        {% if meta.company_name or meta.job_title %}
+        <section class="application-context">
+          {% if meta.job_title %}<h2 class="position-title">{{ meta.job_title }}</h2>{% endif %}
+          {% if meta.company_name %}<p class="company-name">at {{ meta.company_name }}</p>{% endif %}
+        </section>
+        {% endif %}
+
+        <!-- Letter content -->
+        <section class="letter-body">
+          <p class="salutation">{{ content.salutation or "Hello!" }}</p>
+          
+          {% if content.opening %}
+          <p class="opening">{{ content.opening }}</p>
+          {% endif %}
+          
+          {% for paragraph in content.body %}
+          <p class="body-paragraph">{{ paragraph }}</p>
+          {% endfor %}
+          
+          {% if content.closing %}
+          <p class="closing">{{ content.closing }}</p>
+          {% endif %}
+        </section>
+
+        <!-- Signature -->
+        <section class="signature">
+          <p class="sign-off">{{ content.signature or "Cheers," }}</p>
+          <p class="sender-signature">{{ content.sender_name or profile.fullName or "Your Name" }}</p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

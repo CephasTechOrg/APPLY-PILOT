@@ -1,0 +1,17 @@
+{
+  "id": "modern_v1",
+  "name": "Modern",
+  "type": "resume",
+  "description": "Clean, contemporary design with bold headers and skill tags. Perfect for tech and creative roles.",
+  "supportedPurposes": ["software_engineer", "business", "creative"],
+  "defaultTokens": {
+    "fontFamily": "Inter",
+    "spacing": "comfortable",
+    "accentColor": "blue"
+  },
+  "features": [
+    "Skill tags",
+    "Two-column header",
+    "Accent color headers"
+  ]
+}

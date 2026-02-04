@@ -1,0 +1,38 @@
+ApplyPilot - Current Achievements (from codebase)
+
+Backend
+- FastAPI app bootstrapped with lifespan setup, health/root endpoints, and CORS for http://localhost:3000.
+- Environment/config wiring via pydantic-settings with .env and .env.example.
+- PostgreSQL connectivity via SQLAlchemy + session dependency; Docker Compose for Postgres + API.
+- Auth implemented: register/login/refresh endpoints, bcrypt hashing, JWT access/refresh tokens.
+- Email verification flow implemented (verify + resend) with SendGrid email template.
+- Password reset flow implemented (request + reset with emailed code).
+- Profile persistence implemented with profiles table + API endpoints, including Supabase avatar uploads.
+- Company-style profile fields added (education, certifications, work authorization, etc.).
+- Auth dependency added: Bearer token validation and current-user resolution for protected routes.
+- Application tracking implemented: Application model + schemas, CRUD API under /api/applications.
+- Application events audit trail implemented with events endpoint (/api/applications/{id}/events).
+- Application model enhanced with 5 production-ready fields: job_description, recruiter_name, recruiter_email, recruiter_phone, interview_date.
+- Dashboard stats endpoint implemented using Application status and follow-up dates.
+- Alembic migrations added for core tables (users, applications, email_verification_tokens, password_reset_tokens, application_events).
+- Supabase image display debugged and fixed: corrected signed URL generation with proper /storage/v1 path format.
+
+Frontend
+- Next.js 14 + TailwindCSS scaffolding in place.
+- Dashboard UI built: Sidebar, Header, StatCard, PipelineChart, UpcomingFollowups, RecentActivity, QuickActions.
+- Global styles and Material Symbols configured.
+- Auth flow wired: sign-up, email verification, sign-in, logout.
+- API client layer added (axios + auth interceptor).
+- Dashboard stats pull live data from the backend with loading + retry states when authenticated.
+- Profile page added with editable fields + avatar upload, linked from sidebar and persisted via backend.
+- Profile UI expanded with company-style fields and persistence.
+- Applications list connected to backend with status filter.
+- Application detail page connected to backend and shows timeline from application events with refresh control.
+- Avatar uploads from profile page display correctly with Supabase signed URLs on all pages (sidebar, profile, etc.).
+- Application UI redesigned: Professional card grid layout (1-3 columns responsive) with company initials avatar and rich information display.
+- Create application form reorganized into 5 logical sections (Required Info, Job Details, Timeline, Recruiter Contact, Notes) with section icons and dividers.
+- Status indicators enhanced with icons and improved color scheme (100 opacity colors) applied throughout.
+- Application detail page redesigned with large hero header, color-coded information cards (blue/purple/orange for dates), grouped recruiter section.
+- Application timeline enhanced with visual connecting lines, colored dots with status icons, and improved empty/error states.
+- Dark mode fully supported across all application components with proper color contrasts.
+- Responsive design implemented with mobile-first approach (1-col mobile, 2-col tablet, 3-col desktop).

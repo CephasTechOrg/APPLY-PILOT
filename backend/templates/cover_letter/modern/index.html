@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+  <div class="cover-letter">
+    <!-- Modern header with accent bar -->
+    <header class="header">
+      <div class="accent-bar"></div>
+      <div class="header-content">
+        <h1 class="sender-name">{{ profile.fullName or content.sender_name or "Your Name" }}</h1>
+        {% if profile.headline %}
+        <p class="headline">{{ profile.headline }}</p>
+        {% endif %}
+        {% if profile.contact %}
+        <div class="contact-row">
+          {% if profile.contact.email %}<a href="mailto:{{ profile.contact.email }}" class="contact-item">{{ profile.contact.email }}</a>{% endif %}
+          {% if profile.contact.phone %}<span class="contact-item">{{ profile.contact.phone }}</span>{% endif %}
+          {% if profile.contact.linkedin %}<a href="{{ profile.contact.linkedin }}" class="contact-item">LinkedIn</a>{% endif %}
+          {% if profile.contact.location %}<span class="contact-item">{{ profile.contact.location }}</span>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Date and recipient -->
+    <section class="meta-info">
+      <p class="date">{{ current_date }}</p>
+      {% if meta.company_name or meta.job_title %}
+      <div class="recipient">
+        {% if meta.company_name %}<p class="company">{{ meta.company_name }}</p>{% endif %}
+        {% if meta.job_title %}<p class="position">{{ meta.job_title }} Position</p>{% endif %}
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Letter content -->
+    <section class="letter-body">
+      <p class="salutation">{{ content.salutation or "Dear Hiring Manager," }}</p>
+      
+      {% if content.opening %}
+      <p class="opening">{{ content.opening }}</p>
+      {% endif %}
+      
+      {% for paragraph in content.body %}
+      <p class="body-paragraph">{{ paragraph }}</p>
+      {% endfor %}
+      
+      {% if content.closing %}
+      <p class="closing">{{ content.closing }}</p>
+      {% endif %}
+    </section>
+
+    <!-- Modern signature -->
+    <section class="signature">
+      <p class="sign-off">{{ content.signature or "Best regards," }}</p>
+      <div class="signature-line"></div>
+      <p class="sender-signature">{{ content.sender_name or profile.fullName or "Your Name" }}</p>
+    </section>
+  </div>
+</body>
+</html>

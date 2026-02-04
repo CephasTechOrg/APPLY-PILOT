@@ -1,0 +1,17 @@
+{
+  "id": "classic_v1",
+  "name": "Classic",
+  "type": "resume",
+  "description": "Traditional, professional layout with serif fonts. Ideal for corporate, legal, and academic positions.",
+  "supportedPurposes": ["business", "academic", "legal"],
+  "defaultTokens": {
+    "fontFamily": "Georgia",
+    "spacing": "comfortable",
+    "accentColor": "neutral"
+  },
+  "features": [
+    "Serif typography",
+    "Formal structure",
+    "Subtle styling"
+  ]
+}

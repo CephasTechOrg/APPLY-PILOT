@@ -1,0 +1,283 @@
+/* Modern Resume Template - Styles */
+
+/* === Base Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Page Setup === */
+@page {
+  size: A4;
+  margin: 0.75in;
+}
+
+body {
+  font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 10pt;
+  line-height: var(--line-height, 1.5);
+  color: #1a1a1a;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* === Font Family Tokens === */
+[data-font="Inter"] { --font-family: 'Inter', sans-serif; }
+[data-font="Roboto"] { --font-family: 'Roboto', sans-serif; }
+[data-font="Georgia"] { --font-family: 'Georgia', serif; }
+
+/* === Spacing Tokens === */
+[data-spacing="compact"] {
+  --line-height: 1.4;
+  --section-gap: 12pt;
+  --item-gap: 8pt;
+}
+[data-spacing="comfortable"] {
+  --line-height: 1.6;
+  --section-gap: 18pt;
+  --item-gap: 12pt;
+}
+
+/* === Accent Color Tokens === */
+[data-accent="neutral"] { --accent: #4a5568; }
+[data-accent="blue"] { --accent: #2563eb; }
+[data-accent="green"] { --accent: #059669; }
+
+/* === Container === */
+.resume-container {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* === Header === */
+.resume-header {
+  text-align: center;
+  margin-bottom: var(--section-gap, 18pt);
+  padding-bottom: var(--item-gap, 12pt);
+  border-bottom: 2pt solid var(--accent, #4a5568);
+}
+
+.name {
+  font-size: 24pt;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 4pt;
+  letter-spacing: -0.5pt;
+}
+
+.headline {
+  font-size: 12pt;
+  color: #555;
+  margin-bottom: 8pt;
+}
+
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12pt;
+  font-size: 9pt;
+  color: #555;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4pt;
+}
+
+.contact-item .icon {
+  font-size: 10pt;
+}
+
+/* === Sections === */
+.resume-section {
+  margin-bottom: var(--section-gap, 18pt);
+  page-break-inside: avoid;
+}
+
+.section-title {
+  font-size: 12pt;
+  font-weight: 700;
+  color: var(--accent, #4a5568);
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  margin-bottom: var(--item-gap, 12pt);
+  padding-bottom: 4pt;
+  border-bottom: 1pt solid #e5e5e5;
+}
+
+/* === High Emphasis === */
+[data-emphasis="high"] .section-title {
+  font-size: 13pt;
+  color: var(--accent, #4a5568);
+}
+
+/* === Summary === */
+.summary-text {
+  font-size: 10pt;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* === Skills === */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6pt;
+}
+
+.skill-tag {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4pt 10pt;
+  border-radius: 4pt;
+  font-size: 9pt;
+  font-weight: 500;
+}
+
+/* === Experience === */
+.experience-item {
+  margin-bottom: var(--item-gap, 12pt);
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4pt;
+}
+
+.experience-title .role {
+  font-size: 11pt;
+  font-weight: 600;
+  color: #111;
+}
+
+.experience-title .company {
+  font-size: 10pt;
+  color: var(--accent, #4a5568);
+  font-weight: 500;
+}
+
+.experience-meta {
+  text-align: right;
+  font-size: 9pt;
+  color: #666;
+}
+
+.experience-meta .dates {
+  display: block;
+}
+
+.experience-meta .location {
+  display: block;
+  font-style: italic;
+}
+
+.experience-bullets {
+  margin-left: 16pt;
+  margin-top: 6pt;
+}
+
+.experience-bullets li {
+  font-size: 10pt;
+  color: #333;
+  margin-bottom: 3pt;
+}
+
+/* === Projects === */
+.project-item {
+  margin-bottom: var(--item-gap, 12pt);
+}
+
+.project-name {
+  font-size: 11pt;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 3pt;
+}
+
+.project-description {
+  font-size: 10pt;
+  color: #444;
+  margin-bottom: 4pt;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt;
+}
+
+.tech-tag {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 2pt 6pt;
+  border-radius: 3pt;
+  font-size: 8pt;
+  font-weight: 500;
+}
+
+/* === Education === */
+.education-item {
+  margin-bottom: var(--item-gap, 12pt);
+}
+
+.education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.education-header .institution {
+  font-size: 11pt;
+  font-weight: 600;
+  color: #111;
+}
+
+.education-header .dates {
+  font-size: 9pt;
+  color: #666;
+}
+
+.degree {
+  font-size: 10pt;
+  color: #444;
+}
+
+.gpa {
+  font-size: 9pt;
+  color: #666;
+}
+
+/* === Certifications & Awards === */
+.certifications-list,
+.awards-list {
+  margin-left: 16pt;
+}
+
+.certifications-list li,
+.awards-list li {
+  font-size: 10pt;
+  color: #333;
+  margin-bottom: 4pt;
+}
+
+/* === Print Styles === */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .resume-container {
+    max-width: 100%;
+  }
+  
+  .resume-section {
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-font="{{fontFamily}}" data-spacing="{{spacing}}" data-accent="{{accentColor}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{profile.fullName}} - Resume</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="resume-container">
+    <!-- Header -->
+    <header class="resume-header">
+      <h1 class="name">{{profile.fullName}}</h1>
+      <div class="contact-line">
+        {% if profile.contact.email %}{{profile.contact.email}}{% endif %}
+        {% if profile.contact.phone %} | {{profile.contact.phone}}{% endif %}
+        {% if profile.contact.location %} | {{profile.contact.location}}{% endif %}
+      </div>
+      <div class="links-line">
+        {% if profile.contact.linkedin %}{{profile.contact.linkedin}}{% endif %}
+        {% if profile.contact.portfolio %} | {{profile.contact.portfolio}}{% endif %}
+      </div>
+    </header>
+
+    {% for section_name in section_order %}
+    
+    {% if section_name == 'summary' and sections.summary %}
+    <section class="section">
+      <p class="summary">{{sections.summary}}</p>
+    </section>
+    {% endif %}
+
+    {% if section_name == 'experience' and sections.experience %}
+    <section class="section">
+      <h2>Experience</h2>
+      {% for exp in sections.experience %}
+      <div class="item">
+        <div class="item-header">
+          <strong>{{exp.role}}</strong> at {{exp.company}}
+          <span class="date">{{exp.startDate}} – {{exp.endDate or 'Present'}}</span>
+        </div>
+        {% if exp.bullets %}
+        <ul>
+          {% for bullet in exp.bullets %}
+          <li>{{bullet}}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if section_name == 'skills' and sections.skills %}
+    <section class="section">
+      <h2>Skills</h2>
+      <p>{{sections.skills | join(' • ')}}</p>
+    </section>
+    {% endif %}
+
+    {% if section_name == 'projects' and sections.projects %}
+    <section class="section">
+      <h2>Projects</h2>
+      {% for project in sections.projects %}
+      <div class="item">
+        <strong>{{project.name}}</strong>
+        {% if project.description %} — {{project.description}}{% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if section_name == 'education' and sections.education %}
+    <section class="section">
+      <h2>Education</h2>
+      {% for edu in sections.education %}
+      <div class="item">
+        <div class="item-header">
+          <strong>{{edu.institution}}</strong>
+          <span class="date">{{edu.endDate}}</span>
+        </div>
+        <p>{{edu.degree}}{% if edu.field %} in {{edu.field}}{% endif %}</p>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if section_name == 'certifications' and sections.certifications %}
+    <section class="section">
+      <h2>Certifications</h2>
+      <p>{% for cert in sections.certifications %}{{cert.name}}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+    </section>
+    {% endif %}
+
+    {% endfor %}
+  </div>
+</body>
+</html>

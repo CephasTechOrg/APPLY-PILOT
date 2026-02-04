@@ -1,0 +1,235 @@
+/* Creative Cover Letter Template - Bold sidebar layout */
+
+:root {
+  --font-family: 'Inter', 'Segoe UI', sans-serif;
+  --font-size-base: 11pt;
+  --font-size-name: 20pt;
+  --font-size-title: 16pt;
+  --line-height: 1.7;
+  --color-text: #1a1a2e;
+  --color-accent: #6366f1;
+  --color-accent-light: #eef2ff;
+  --color-muted: #64748b;
+  --color-sidebar-bg: #1a1a2e;
+  --color-sidebar-text: #ffffff;
+  --spacing-section: 24px;
+  --spacing-paragraph: 14px;
+  --page-margin: 0;
+  --sidebar-width: 220px;
+}
+
+/* Spacing variants */
+.spacing-compact {
+  --spacing-section: 18px;
+  --spacing-paragraph: 10px;
+  --line-height: 1.5;
+  --sidebar-width: 200px;
+}
+
+.spacing-comfortable {
+  --spacing-section: 28px;
+  --spacing-paragraph: 16px;
+  --line-height: 1.8;
+  --sidebar-width: 240px;
+}
+
+/* Font variants */
+.font-inter { --font-family: 'Inter', 'Segoe UI', sans-serif; }
+.font-roboto { --font-family: 'Roboto', 'Arial', sans-serif; }
+.font-georgia { --font-family: 'Georgia', serif; }
+
+/* Accent color variants */
+.accent-neutral { 
+  --color-accent: #475569;
+  --color-accent-light: #f1f5f9;
+  --color-sidebar-bg: #1e293b;
+}
+.accent-blue { 
+  --color-accent: #2563eb;
+  --color-accent-light: #eff6ff;
+  --color-sidebar-bg: #1e3a5f;
+}
+.accent-green { 
+  --color-accent: #059669;
+  --color-accent-light: #ecfdf5;
+  --color-sidebar-bg: #064e3b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background: white;
+}
+
+.cover-letter {
+  max-width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+}
+
+.layout {
+  display: flex;
+  min-height: 11in;
+}
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
+  padding: 40px 24px;
+  flex-shrink: 0;
+}
+
+.sidebar-content {
+  position: sticky;
+  top: 40px;
+}
+
+.sender-name {
+  font-size: var(--font-size-name);
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.tagline {
+  font-size: 10pt;
+  opacity: 0.85;
+  margin-bottom: var(--spacing-section);
+  font-style: italic;
+}
+
+.contact-section {
+  margin-bottom: var(--spacing-section);
+}
+
+.contact-item {
+  margin-bottom: 12px;
+}
+
+.contact-item .label {
+  display: block;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  margin-bottom: 2px;
+}
+
+.contact-item .value {
+  font-size: 9pt;
+  word-break: break-word;
+}
+
+.date-section {
+  padding-top: var(--spacing-section);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.date-section .label {
+  display: block;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.date-section .value {
+  font-size: 10pt;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 48px 40px;
+}
+
+.application-context {
+  margin-bottom: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+  border-bottom: 2px solid var(--color-accent-light);
+}
+
+.position-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+
+.company-name {
+  font-size: 11pt;
+  color: var(--color-muted);
+}
+
+/* Letter body */
+.letter-body {
+  margin-bottom: var(--spacing-section);
+}
+
+.salutation {
+  font-weight: 600;
+  font-size: 12pt;
+  margin-bottom: var(--spacing-paragraph);
+  color: var(--color-accent);
+}
+
+.opening {
+  font-weight: 500;
+  margin-bottom: var(--spacing-paragraph);
+}
+
+.body-paragraph {
+  margin-bottom: var(--spacing-paragraph);
+}
+
+.closing {
+  margin-top: var(--spacing-section);
+}
+
+/* Signature */
+.signature {
+  margin-top: calc(var(--spacing-section) * 1.5);
+}
+
+.sign-off {
+  color: var(--color-muted);
+  margin-bottom: 24px;
+}
+
+.sender-signature {
+  font-weight: 700;
+  font-size: 14pt;
+  color: var(--color-accent);
+}
+
+/* Print styles */
+@media print {
+  .cover-letter {
+    min-height: auto;
+  }
+  
+  .layout {
+    min-height: auto;
+  }
+  
+  .sidebar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  @page {
+    margin: 0;
+    size: letter;
+  }
+}

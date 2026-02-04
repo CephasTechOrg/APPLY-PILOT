@@ -1,0 +1,265 @@
+ApplyPilot — AI Resume + Job Application Tracker (Enterprise SaaS)
+================================================================================
+
+PROJECT IDENTITY
+--------------------------------------------------------------------------------
+Name: ApplyPilot
+Type: SaaS Web Application
+Core Purpose: AI-powered resume tailoring + application tracking + reminders
+Target Users: Students, job seekers, internship seekers, international applicants
+Long-term Goal: Scale from 10,000 → 100,000 users without performance issues
+Current Status: Phase 1 (Foundation) — Core architecture implemented
+
+EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+ApplyPilot is an AI-powered platform that helps users:
+- Manage and store resumes securely with version control
+- Tailor resumes to job descriptions using AI matching
+- Generate professional content (cover letters, follow-ups, interview prep)
+- Track applications in a visual pipeline (Saved → Applied → Interview → Offer → Rejected)
+- Receive smart reminders and notifications (in-app + email)
+- Maintain enterprise-grade security with verification workflows
+
+MVP CORE FEATURES
+--------------------------------------------------------------------------------
+1) Authentication & User Management
+        - User registration with email verification
+        - Login/Logout with JWT access + refresh tokens
+        - Password hashing (bcrypt)
+        - Forgot password / reset password workflow
+        - All protected resources require valid authentication
+
+2) Dashboard (Primary UI Entry Point)
+        - Sidebar navigation and unified page layout
+        - Header with search + New Application action
+        - Stat cards (weekly applications, interviews, offers, AI credits)
+        - Pipeline breakdown by status
+        - Upcoming follow-ups list
+        - Recent activity timeline
+        - Quick actions (Tailor Resume, Cover Letter, ATS Scan, Add Reminder)
+        - Design consistency across all pages
+
+3) Application Tracking
+        - Job record: company, job title, link, description, status, follow-up date, notes
+        - Status pipeline: Saved → Applied → Interview → Offer → Rejected
+        - CRUD operations + timeline history
+        - Search/filter on pipeline
+        - Note: platform does NOT auto-apply to jobs
+
+4) Resume Management
+        - Upload resume (PDF/DOCX)
+        - Extract text automatically
+        - Store metadata in Postgres, file in object storage
+        - Master resume + tailored versions per job
+
+5) AI Engine
+        - Tailor resume to job description
+        - Generate cover letter
+        - ATS keyword checklist
+        - Suggest missing skills/keywords
+        - Optional interview prep suggestions
+        - AI usage tracking per user
+
+6) Notifications & Reminders
+        - In-app notifications with read/unread state
+        - Reminder types: follow-ups, status updates, AI completion
+        - Email notifications via SendGrid
+
+TECH STACK (PRODUCTION-READY)
+--------------------------------------------------------------------------------
+Frontend
+- Next.js 14 (React) + TypeScript
+- TailwindCSS (custom theme)
+- Zustand for state management
+- Axios for API requests
+- React Hook Form + Zod for validation
+- Material Symbols + Lucide icons
+
+Backend
+- FastAPI (Python)
+- Pydantic v2 validation
+- SQLAlchemy 2.0 ORM
+- Alembic migrations
+- JWT auth (access + refresh)
+- bcrypt password hashing
+
+Data & Infrastructure
+- PostgreSQL primary DB
+- Redis for caching / rate limiting
+- Object storage (S3 / Supabase / R2)
+- Celery + Redis for background tasks
+
+External Services
+- SendGrid (transactional email)
+- AI provider (DeepSeek / OpenAI)
+
+Dev & Ops
+- Docker + Docker Compose
+- .env + pydantic-settings
+- ESLint / Prettier / TS strict
+- DB GUI: pgAdmin / TablePlus
+
+CURRENT IMPLEMENTATION STATUS (ACTUAL CODE)
+--------------------------------------------------------------------------------
+Backend (Done)
+- Auth: register/login/refresh, email verification, password reset
+- JWT + bcrypt, auth dependency, SendGrid email integration
+- Applications CRUD + application events timeline API
+- Dashboard stats API
+- Alembic migrations for users, applications, email verification, password reset, application events
+
+Frontend (Done)
+- Auth flow wired (sign-up, verify, sign-in, logout)
+- API client layer with auth interceptor
+- Dashboard connected to backend
+- Applications list + detail pages connected to backend
+- Timeline shows real events with refresh control
+
+Not Implemented Yet
+- Resume management (upload + storage + parsing)
+- AI endpoints (tailor resume, cover letter, ATS)
+- Notifications + background jobs
+- Create/Edit/Delete application UI
+
+NEXT SPRINT (ONE STEP AT A TIME)
+--------------------------------------------------------------------------------
+1) Create Application UI (modal + validation + POST /api/applications)
+2) Edit/Delete Application UI (PATCH/DELETE)
+3) Resume management backend (model + upload + storage)
+
+SYSTEM ARCHITECTURE (HIGH LEVEL)
+--------------------------------------------------------------------------------
+Next.js Frontend → FastAPI Backend → PostgreSQL
+                     ↘ Redis + Celery ↘ External APIs (AI/Email)
+                     ↘ Object Storage (Resume Files)
+
+Service Communication
+- Frontend → Backend: REST API + JWT authentication
+- Backend → Database: SQLAlchemy ORM + migrations
+- Backend → External APIs: HTTP requests with timeout + retry
+- Workers: Celery for background tasks
+
+CORE DATA MODEL (TABLES)
+--------------------------------------------------------------------------------
+Users
+- id, full_name, email, password_hash, email_verified, created_at, last_login_at
+Applications
+- id, user_id, company, job_title, job_link, job_description, status,
+  follow_up_date, notes, created_at, updated_at
+Application Events
+- id, application_id, old_status, new_status, changed_at
+Resumes
+- id, user_id, resume_name, is_master, storage_url, parsed_text, created_at
+Resume Versions
+- id, resume_id, application_id, tailored_text, created_at
+AI Requests
+- id, user_id, request_type, prompt, output_text, created_at
+Notifications
+- id, user_id, type, title, message, is_read, created_at
+Tokens (verification + reset)
+- id, user_id, token_hash, type, expires_at, used_at
+
+SECURITY REQUIREMENTS
+--------------------------------------------------------------------------------
+Authentication
+- bcrypt password hashing
+- JWT access (short-lived) + refresh tokens (long-lived)
+- Refresh token rotation (future)
+
+Authorization
+- Validate user ownership via user_id
+- RBAC foundation for future
+
+Email Security
+- Verification + reset tokens are single-use and expire
+
+API Security
+- Rate limiting (auth + AI endpoints)
+- File upload validation (size/type/malware scan)
+- CORS restricted to trusted domains
+- ORM-based SQL injection prevention
+
+DEVELOPMENT ROADMAP (PHASED)
+--------------------------------------------------------------------------------
+Phase 0 — Foundations ✅ COMPLETED
+- Monorepo structure, env config, DB connection, migrations, health endpoints
+
+Phase 1 — Authentication ✅ COMPLETED
+- Register, login, verification, password reset
+
+Phase 2 — Application Tracker ✅ COMPLETED
+- Applications CRUD + dashboard stats + application events
+
+Phase 3 — UI Integration 🔄 IN PROGRESS
+- Create/Edit/Delete application UI
+
+Phase 4 — Resume Upload & Storage ⏳ PENDING
+- Resume upload, parsing, storage integration
+
+Phase 5 — AI Engine Integration ⏳ PENDING
+- Tailor resume, cover letters, ATS checklist, usage tracking
+
+Phase 6 — Notifications & Reminders ⏳ PENDING
+- In-app notifications + scheduled follow-ups
+
+Phase 7 — Production Deployment ⏳ PENDING
+- Hosting, secrets, migrations, monitoring
+
+DEPLOYMENT STRATEGY
+--------------------------------------------------------------------------------
+Target Platforms
+- Backend: Render or Railway
+- Frontend: Vercel
+- Database: Neon or Supabase
+- Cache/Queue: Redis Cloud or Upstash
+- File Storage: Supabase Storage or Cloudflare R2
+
+Production Configuration
+- .env.example maintained
+- Debug disabled, secure cookies, HTTPS, CORS restrictions
+- Rate limiting + structured logging
+
+CI/CD
+- GitHub Actions for tests + deploy
+- Auto migrations on deploy
+- Health checks + rollback
+
+KEY CONSTRAINTS & NOTES
+--------------------------------------------------------------------------------
+- No auto-apply automation in MVP
+- AI assists user actions only
+- Keep paid APIs minimal (SendGrid + AI)
+- UI consistency across dashboard-based pages
+
+SUCCESS METRICS
+--------------------------------------------------------------------------------
+Technical
+- API response time < 200ms (p95)
+- App load time < 3 seconds
+- Uptime > 99.9%
+
+Business
+- Registration completion > 60%
+- DAU/MAU > 30%
+- 30-day retention > 40%
+
+User Satisfaction
+- NPS > 40
+- CSAT > 4.5/5
+
+RISK MANAGEMENT
+--------------------------------------------------------------------------------
+Technical Risks
+- AI cost control via quotas + caching
+- File storage cost via cleanup policies
+- Database performance via indexing + profiling
+
+Business Risks
+- Acquisition via SEO + partnerships
+- Competition via AI differentiation
+- Compliance via GDPR/CCPA readiness
+
+Mitigations
+- Security audits
+- Monitoring + alerting
+- Automated backups + recovery

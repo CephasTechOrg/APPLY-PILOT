@@ -1,0 +1,17 @@
+{
+  "id": "minimal_v1",
+  "name": "Minimal",
+  "type": "resume",
+  "description": "Ultra-clean, space-efficient design. Maximum content in minimum space. Great for experienced professionals.",
+  "supportedPurposes": ["software_engineer", "business", "startup"],
+  "defaultTokens": {
+    "fontFamily": "Inter",
+    "spacing": "compact",
+    "accentColor": "neutral"
+  },
+  "features": [
+    "Compact layout",
+    "Content-dense",
+    "ATS-friendly"
+  ]
+}
