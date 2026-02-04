@@ -203,9 +203,16 @@ def upload_resume_file(
         "x-upsert": "true",
     }
 
-    response = requests.post(upload_url, headers=headers, data=content, timeout=30)
-    if response.status_code >= 300:
-        raise StorageError(f"Supabase upload failed: {response.status_code}")
+    try:
+        response = requests.post(upload_url, headers=headers, data=content, timeout=30)
+        if response.status_code >= 300:
+            raise StorageError(f"Supabase upload failed: {response.status_code}")
+    except requests.exceptions.ConnectionError as e:
+        raise StorageError(f"Unable to connect to storage service. Please check your internet connection and try again.")
+    except requests.exceptions.Timeout:
+        raise StorageError(f"Storage upload timed out. Please try again.")
+    except requests.exceptions.RequestException as e:
+        raise StorageError(f"Storage upload failed: {str(e)}")
 
     signed_url = create_signed_url(object_path)
     return object_path, signed_url
@@ -259,9 +266,16 @@ def download_resume_file(object_path: str) -> bytes:
         "apikey": key,
     }
     
-    response = requests.get(download_url, headers=headers, timeout=60)
-    if response.status_code >= 300:
-        raise StorageError(f"Supabase download failed: {response.status_code}")
+    try:
+        response = requests.get(download_url, headers=headers, timeout=60)
+        if response.status_code >= 300:
+            raise StorageError(f"Supabase download failed: {response.status_code}")
+    except requests.exceptions.ConnectionError:
+        raise StorageError(f"Unable to connect to storage service. Please check your internet connection and try again.")
+    except requests.exceptions.Timeout:
+        raise StorageError(f"Storage download timed out. Please try again.")
+    except requests.exceptions.RequestException as e:
+        raise StorageError(f"Storage download failed: {str(e)}")
     
     return response.content
 
