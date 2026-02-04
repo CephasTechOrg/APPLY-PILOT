@@ -8,7 +8,10 @@ import UpcomingFollowups from '@/components/dashboard/UpcomingFollowups'
 import RecentActivity from '@/components/dashboard/RecentActivity'
 import QuickActions from '@/components/dashboard/QuickActions'
 import DashboardGreeting from '@/components/dashboard/DashboardGreeting'
+import EmailList from '@/components/EmailList'
+import EmailModal from '@/components/EmailModal'
 import { dashboardService, DashboardStats } from '@/services/dashboardService'
+import { EmailResponse } from '@/services/emailService'
 import { format } from 'date-fns'
 
 const initialDashboardData: DashboardStats = {
@@ -34,6 +37,7 @@ const DashboardView = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 
   const fetchStats = useCallback(async () => {
     try {
@@ -184,6 +188,39 @@ const DashboardView = () => {
         </div>
         <QuickActions />
       </section>
+
+      {/* Email Tracking Section */}
+      <section className="bg-card-light dark:bg-card-dark rounded-2xl shadow-card border border-gray-100 dark:border-gray-800 p-6 mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
+              <span className="material-symbols-outlined text-blue-600">mail</span>
+              Email Deadline Tracking
+            </h3>
+            <p className="text-sm text-text-secondary mt-1">Track email deadlines and get AI-powered alerts</p>
+          </div>
+          <button
+            onClick={() => setIsEmailModalOpen(true)}
+            className="px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold text-sm flex items-center gap-2 transition"
+          >
+            <span className="material-symbols-outlined text-lg">add_circle</span>
+            Add Email
+          </button>
+        </div>
+        <EmailList onAddClick={() => setIsEmailModalOpen(true)} />
+      </section>
+
+      {/* Email Modal */}
+      {isEmailModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <EmailModal
+            onEmailSaved={(email: EmailResponse) => {
+              setIsEmailModalOpen(false)
+            }}
+            onClose={() => setIsEmailModalOpen(false)}
+          />
+        </div>
+      )}
     </>
   )
 }

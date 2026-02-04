@@ -81,7 +81,7 @@ export default function EventTimeline({ events, applicationId, onEventUpdated }:
                   />
                 )}
 
-                <div className="relative flex items-start gap-3">
+                <div className="relative flex flex-col sm:flex-row sm:items-start gap-3">
                   {/* Event icon */}
                   <div
                     className={`relative flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white dark:ring-gray-900 ${
@@ -111,7 +111,9 @@ export default function EventTimeline({ events, applicationId, onEventUpdated }:
 
                     {/* Summary */}
                     {event.summary && (
-                      <p className="mt-1 text-sm text-text-secondary leading-relaxed">{event.summary}</p>
+                      <p className="mt-1 text-sm text-text-secondary leading-relaxed break-words">
+                        {event.summary}
+                      </p>
                     )}
 
                     {/* Event date (if different from logged date) */}

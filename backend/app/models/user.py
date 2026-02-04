@@ -25,6 +25,7 @@ class User(Base):
     ai_requests = relationship("AIRequest", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", cascade="all, delete-orphan")
     cover_letters = relationship("CoverLetter", back_populates="user", cascade="all, delete-orphan")
+    emails = relationship("Email", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<User {self.email}>"

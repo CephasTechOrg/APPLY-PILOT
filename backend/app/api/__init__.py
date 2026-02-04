@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api import auth, dashboard, applications, profile, resumes, ai, notifications, templates, resume_content, cover_letters, events
+from app.api import auth, dashboard, applications, profile, resumes, ai, notifications, templates, resume_content, cover_letters, events, emails
 
 router = APIRouter()
 
@@ -13,4 +13,5 @@ router.include_router(resume_content.router, prefix="/resumes", tags=["Resume Co
 router.include_router(templates.router, prefix="/templates", tags=["Templates"])
 router.include_router(ai.router, prefix="/ai", tags=["AI"])
 router.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
+router.include_router(emails.router, tags=["Emails"])
 router.include_router(cover_letters.router, tags=["Cover Letters"])

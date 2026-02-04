@@ -11,3 +11,4 @@ from app.models.notification import Notification
 from app.models.resume_content import ResumeContent, ExtractionStatus
 from app.models.resume_template import ResumeTemplate, TemplateType
 from app.models.cover_letter import CoverLetter
+from app.models.email import Email

@@ -34,6 +34,9 @@ class ResumeContent(Base):
 
     # Canonical JSON schema data
     structured_data = Column(JSONB, nullable=True)
+    
+    # Raw text extracted from resume file
+    raw_text = Column(Text, nullable=True)
 
     # Extraction metadata - use string values matching the database enum
     extraction_status = Column(

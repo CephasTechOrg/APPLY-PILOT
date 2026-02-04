@@ -7,6 +7,7 @@ export interface ResumeContent {
   id: number
   resume_id: number
   structured_data: Record<string, any> | null
+  raw_text: string | null
   extraction_status: 'pending' | 'processing' | 'completed' | 'failed'
   extraction_error: string | null
   purpose: string | null

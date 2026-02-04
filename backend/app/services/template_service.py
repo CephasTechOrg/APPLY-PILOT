@@ -169,17 +169,21 @@ def render_resume_html(
     resume_data: Dict[str, Any],
     design_tokens: Optional[Dict[str, str]] = None,
     purpose: Optional[str] = None,
-    inline_css: bool = True
+    inline_css: bool = True,
+    profile: Optional[Dict[str, Any]] = None
 ) -> str:
     """
     Render resume data to HTML using specified template.
     
+    Unified with cover letter rendering for consistency.
+    
     Args:
         template_slug: Template to use (modern, classic, minimal)
-        resume_data: Canonical resume schema data
+        resume_data: Resume data in canonical schema
         design_tokens: Design token overrides
         purpose: Resume purpose for section ordering
         inline_css: Whether to inline CSS in the HTML
+        profile: User profile data for rendering (name, email, phone, etc.)
         
     Returns:
         Rendered HTML string
@@ -199,17 +203,34 @@ def render_resume_html(
     section_order = get_section_order(purpose or resume_data.get("meta", {}).get("purpose"))
     emphasis = get_section_emphasis(purpose or resume_data.get("meta", {}).get("purpose"))
     
-    # Prepare template context
+    # Load template CSS
+    css = load_template_css(template_slug)
+    
+    # Prepare template context - unified with cover letter schema
     context = {
         # Design tokens
-        "fontFamily": tokens.get("fontFamily", "Inter"),
-        "spacing": tokens.get("spacing", "comfortable"),
-        "accentColor": tokens.get("accentColor", "neutral"),
+        "font_family_token": tokens.get("fontFamily", "Inter"),
+        "spacing_token": tokens.get("spacing", "comfortable"),
+        "accent_color_token": tokens.get("accentColor", "neutral"),
+        
+        # CSS (inlined or for link)
+        "css": css,
+        "styles": css,  # Template variable name
         
         # Resume data
-        "profile": resume_data.get("profile", {}),
+        "profile": profile or resume_data.get("profile", {}),
+        "basics": resume_data.get("profile", {}),  # Old schema compatibility
         "sections": resume_data.get("sections", {}),
         "meta": resume_data.get("meta", {}),
+        
+        # Legacy JSON Resume fields for existing templates
+        "education": resume_data.get("sections", {}).get("education", []),
+        "work": resume_data.get("sections", {}).get("experience", []),
+        "skills": resume_data.get("sections", {}).get("skills", []),
+        "projects": resume_data.get("sections", {}).get("projects", []),
+        "volunteer": resume_data.get("sections", {}).get("volunteer", []),
+        "certifications": resume_data.get("sections", {}).get("certifications", []),
+        "coursework": resume_data.get("sections", {}).get("coursework", []),
         
         # Layout control
         "section_order": section_order,
@@ -218,16 +239,6 @@ def render_resume_html(
     
     # Render HTML
     html = template.render(**context)
-    
-    # Inline CSS if requested
-    if inline_css:
-        css = load_template_css(template_slug)
-        # Replace stylesheet link with inline style
-        style_tag = f"<style>\n{css}\n</style>"
-        html = html.replace(
-            '<link rel="stylesheet" href="styles.css">',
-            style_tag
-        )
     
     return html
 

@@ -25,7 +25,8 @@ const ResumesPage = () => {
   const [resumes, setResumes] = useState<ResumeWithContent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [extractingId, setExtractingId] = useState<number | null>(null)
+  const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [extracting, setExtracting] = useState<Set<number>>(new Set())
   const { showToast } = useToast()
 
   const fetchResumes = async () => {
@@ -34,7 +35,6 @@ const ResumesPage = () => {
       setError(null)
       const data = await resumeService.listResumes()
       
-      // Fetch content status for each resume
       const resumesWithContent = await Promise.all(
         data.map(async (resume) => {
           try {
@@ -60,45 +60,88 @@ const ResumesPage = () => {
 
   const handleExtract = async (resumeId: number) => {
     try {
-      setExtractingId(resumeId)
+      setExtracting((prev) => new Set([...prev, resumeId]))
+      setResumes((prev) =>
+        prev.map((r) =>
+          r.id === resumeId
+            ? {
+                ...r,
+                content: {
+                  ...(r.content ? r.content : {}),
+                  extraction_status: 'processing',
+                  raw_text: r.content?.raw_text || null,
+                  structured_data: r.content?.structured_data || null,
+                  extraction_error: null,
+                  id: r.content?.id || 0,
+                  resume_id: r.id,
+                  purpose: r.content?.purpose || null,
+                  industry: r.content?.industry || null,
+                  language: r.content?.language || null,
+                  tone: r.content?.tone || null,
+                  created_at: r.content?.created_at || new Date().toISOString(),
+                  updated_at: r.content?.updated_at || new Date().toISOString(),
+                },
+              }
+            : r
+        )
+      )
+      
+      // Trigger extraction
       await resumeService.extractResume(resumeId, true)
-      showToast('Extraction started! This may take a moment.', 'info')
       
       // Poll for completion
+      let completed = false
       let attempts = 0
-      const pollInterval = setInterval(async () => {
-        attempts++
+      const maxAttempts = 30
+      
+      while (!completed && attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        
         try {
           const content = await resumeService.getResumeContent(resumeId)
           if (content.extraction_status === 'completed') {
-            clearInterval(pollInterval)
-            setExtractingId(null)
-            showToast('Resume extracted successfully!', 'success')
-            fetchResumes()
+            completed = true
+            // Update the resume in state
+            setResumes((prev) =>
+              prev.map((r) => (r.id === resumeId ? { ...r, content } : r))
+            )
+            showToast('Resume text extracted successfully!', 'success')
           } else if (content.extraction_status === 'failed') {
-            clearInterval(pollInterval)
-            setExtractingId(null)
-            showToast(`Extraction failed: ${content.extraction_error}`, 'error')
-            fetchResumes()
-          } else if (attempts >= 30) {
-            clearInterval(pollInterval)
-            setExtractingId(null)
-            showToast('Extraction is taking longer than expected. Check back later.', 'warning')
+            throw new Error(content.extraction_error || 'Extraction failed')
+          } else {
+            // Update status while processing
+            setResumes((prev) =>
+              prev.map((r) => (r.id === resumeId ? { ...r, content } : r))
+            )
           }
-        } catch {
-          if (attempts >= 30) {
-            clearInterval(pollInterval)
-            setExtractingId(null)
+        } catch (pollErr: any) {
+          if (pollErr?.response?.status === 404) {
+            // Content not created yet, keep polling
+          } else if (attempts === maxAttempts - 1) {
+            throw pollErr
           }
         }
-      }, 2000)
+        
+        attempts++
+      }
+      
+      if (!completed) {
+        throw new Error('Extraction timeout - still processing')
+      }
     } catch (err) {
-      setExtractingId(null)
-      showToast(err instanceof Error ? err.message : 'Failed to start extraction', 'error')
+      showToast(err instanceof Error ? err.message : 'Failed to extract resume', 'error')
+    } finally {
+      setExtracting((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(resumeId)
+        return newSet
+      })
     }
   }
 
   const handleDelete = async (resumeId: number) => {
+    if (!window.confirm('Delete this resume?')) return
+    
     try {
       await resumeService.deleteResume(resumeId)
       setResumes((prev) => prev.filter((resume) => resume.id !== resumeId))
@@ -108,160 +151,131 @@ const ResumesPage = () => {
     }
   }
 
-  const getExtractionStatus = (content: ResumeContent | null | undefined) => {
-    if (!content) return { label: 'Not extracted', color: 'text-gray-500 bg-gray-100 dark:bg-gray-800' }
-    switch (content.extraction_status) {
-      case 'completed':
-        return { label: 'Extracted', color: 'text-green-600 bg-green-100 dark:bg-green-900/30' }
-      case 'processing':
-        return { label: 'Processing...', color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30' }
-      case 'failed':
-        return { label: 'Failed', color: 'text-red-600 bg-red-100 dark:bg-red-900/30' }
-      default:
-        return { label: 'Pending', color: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30' }
-    }
-  }
-
   return (
-    <AppShell title="Resumes" subtitle="Manage resume versions and templates" showSearch={false} showActions={false}>
+    <AppShell title="My Resumes" subtitle="Upload and manage your resumes" showSearch={false} showActions={false}>
       <AuthGate>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <p className="text-sm text-text-secondary">Keep your master resume and tailored versions organized.</p>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/Resumes/templates"
-              className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-text-main dark:text-white rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-            >
-              <span className="material-symbols-outlined text-[18px]">style</span>
-              Templates
-            </Link>
-            <Link
-              href="/Resumes/upload"
-              className="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/30"
-            >
-              Upload Resume
-            </Link>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-sm text-text-secondary">Upload resumes and extract text for AI processing.</p>
+          <Link
+            href="/Resumes/upload"
+            className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto flex-shrink-0"
+          >
+            <span className="material-symbols-outlined">add</span>
+            Upload Resume
+          </Link>
         </div>
 
         {error && (
-          <div className="mt-6 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 rounded-2xl px-4 py-3">
-            <p className="text-sm font-semibold">{error}</p>
+          <div className="mt-6 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg p-4 text-sm">
+            {error}
           </div>
         )}
 
         <section className="mt-6">
           {isLoading ? (
-            <div className="text-center py-12 text-sm text-text-secondary">
-              <span className="material-symbols-outlined animate-spin text-2xl mb-2">refresh</span>
-              <p>Loading resumes...</p>
+            <div className="text-center py-8">
+              <span className="material-symbols-outlined animate-spin text-2xl text-primary mb-2 block">refresh</span>
+              <p className="text-sm text-text-secondary">Loading resumes...</p>
             </div>
           ) : resumes.length === 0 ? (
-            <div className="text-center py-12">
-              <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-700 mb-3">description</span>
-              <p className="text-sm text-text-secondary">No resumes uploaded yet.</p>
+            <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600 mb-3 block">description</span>
+              <p className="text-sm text-text-secondary mb-4">No resumes uploaded yet</p>
+              <Link
+                href="/Resumes/upload"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:opacity-90 transition"
+              >
+                <span className="material-symbols-outlined">add</span>
+                Upload your first resume
+              </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
               {resumes.map((resume) => (
-                <div
-                  key={resume.id}
-                  className="bg-white dark:bg-card-dark rounded-2xl shadow-card border border-gray-100 dark:border-gray-800 p-6 hover:shadow-lg transition"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                        <span className="material-symbols-outlined">description</span>
+                <div key={resume.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg">
+                  {/* Header */}
+                  <div className="p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-text-main dark:text-white break-words">{resume.title}</h3>
+                        <p className="text-xs text-text-secondary mt-1 break-words">
+                          {resume.file_name} • {formatFileSize(resume.file_size)}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          Updated {formatDistanceToNow(new Date(resume.updated_at || resume.created_at), { addSuffix: true })}
+                        </p>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-text-main dark:text-white">{resume.title}</h3>
-                        <p className="text-xs text-text-secondary mt-1">{resume.file_name}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {resume.is_primary && (
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                          Primary
-                        </span>
-                      )}
-                      {(() => {
-                        const status = getExtractionStatus(resume.content)
-                        return (
-                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${status.color}`}>
-                            {status.label}
+                      <div className="flex flex-row sm:flex-col gap-2 flex-wrap sm:flex-nowrap sm:items-end">
+                        {resume.is_primary && (
+                          <span className="text-xs font-semibold px-2 py-1 rounded bg-primary/10 text-primary whitespace-nowrap">
+                            Primary
                           </span>
-                        )
-                      })()}
+                        )}
+                        {resume.content?.extraction_status === 'processing' ? (
+                          <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 whitespace-nowrap">
+                            Processing
+                          </span>
+                        ) : resume.content?.raw_text ? (
+                          <span className="text-xs font-semibold px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 whitespace-nowrap">
+                            ✓ Extracted
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            Pending
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3 text-xs">
+                      {resume.file_url && (
+                        <a
+                          href={resume.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline font-semibold"
+                        >
+                          View File
+                        </a>
+                      )}
+                      {!resume.content?.raw_text && resume.content?.extraction_status !== 'processing' && (
+                        <button
+                          onClick={() => handleExtract(resume.id)}
+                          disabled={extracting.has(resume.id)}
+                          className="text-blue-600 dark:text-blue-400 hover:underline font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {extracting.has(resume.id) ? 'Extracting...' : 'Extract Text'}
+                        </button>
+                      )}
+                      {resume.content?.raw_text && (
+                        <button
+                          onClick={() => setExpandedId(expandedId === resume.id ? null : resume.id)}
+                          className="text-text-secondary hover:text-text-main font-semibold"
+                        >
+                          {expandedId === resume.id ? 'Hide' : 'Show'} Text
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(resume.id)}
+                        className="sm:ml-auto text-red-600 dark:text-red-400 hover:underline font-semibold"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between text-xs text-text-secondary">
-                    <span>
-                      Updated {formatDistanceToNow(new Date(resume.updated_at || resume.created_at), { addSuffix: true })}
-                    </span>
-                    <span>{formatFileSize(resume.file_size)}</span>
-                  </div>
-
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
-                    {resume.file_url ? (
-                      <a
-                        href={resume.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary hover:text-primary transition"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                        View
-                      </a>
-                    ) : (
-                      <span className="text-xs text-text-secondary">Uploading...</span>
-                    )}
-                    
-                    {/* Extract button */}
-                    {(!resume.content || resume.content.extraction_status === 'failed' || !resume.content.extraction_status) && (
-                      <button
-                        type="button"
-                        onClick={() => handleExtract(resume.id)}
-                        disabled={extractingId === resume.id}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-purple-600 hover:text-purple-700 disabled:opacity-50 transition"
-                      >
-                        <span className={`material-symbols-outlined text-[18px] ${extractingId === resume.id ? 'animate-spin' : ''}`}>
-                          {extractingId === resume.id ? 'refresh' : 'auto_awesome'}
-                        </span>
-                        {extractingId === resume.id ? 'Extracting...' : 'Extract with AI'}
-                      </button>
-                    )}
-                    
-                    {/* Edit structured data (only if extracted) */}
-                    {resume.content?.extraction_status === 'completed' && (
-                      <Link
-                        href={`/Resumes/${resume.id}/edit`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">edit</span>
-                        Edit
-                      </Link>
-                    )}
-                    
-                    {/* Preview with template (only if extracted) */}
-                    {resume.content?.extraction_status === 'completed' && (
-                      <Link
-                        href={`/Resumes/${resume.id}/preview`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 hover:text-green-700"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">visibility</span>
-                        Preview
-                      </Link>
-                    )}
-                    
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(resume.id)}
-                      className="ml-auto text-xs font-semibold text-red-600 hover:text-red-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {/* Expanded Text Preview */}
+                  {expandedId === resume.id && resume.content?.raw_text && (
+                    <div className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-4">
+                      <p className="text-xs font-semibold text-text-secondary mb-2">Extracted Text</p>
+                      <div className="bg-white dark:bg-gray-900 rounded p-3 border border-gray-200 dark:border-gray-700 max-h-64 sm:max-h-80 overflow-y-auto">
+                        <p className="text-sm leading-relaxed text-text-main dark:text-gray-300 whitespace-pre-wrap break-words">
+                          {resume.content.raw_text}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

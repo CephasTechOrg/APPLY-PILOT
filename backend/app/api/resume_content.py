@@ -32,6 +32,77 @@ from app.services.template_service import render_resume_html, resolve_design_tok
 router = APIRouter()
 
 
+def _format_structured_resume(data: dict) -> str:
+    """Format structured resume data as readable text."""
+    lines = []
+    
+    profile = data.get("profile", {})
+    if profile.get("fullName"):
+        lines.append(profile["fullName"])
+    if profile.get("headline"):
+        lines.append(profile["headline"])
+    
+    contact = profile.get("contact", {})
+    contact_parts = []
+    if contact.get("email"):
+        contact_parts.append(contact["email"])
+    if contact.get("phone"):
+        contact_parts.append(contact["phone"])
+    if contact.get("location"):
+        contact_parts.append(contact["location"])
+    if contact_parts:
+        lines.append(" | ".join(contact_parts))
+    
+    if lines:
+        lines.append("")
+    
+    sections = data.get("sections", {})
+    
+    if sections.get("summary"):
+        lines.append("SUMMARY")
+        lines.append(sections["summary"])
+        lines.append("")
+    
+    if sections.get("experience"):
+        lines.append("EXPERIENCE")
+        for exp in sections["experience"]:
+            lines.append(f"{exp.get('role', 'Role')} at {exp.get('company', 'Company')}")
+            if exp.get("startDate") or exp.get("endDate"):
+                date_str = f"{exp.get('startDate', '')} - {exp.get('endDate', 'Present')}"
+                lines.append(date_str)
+            if exp.get("bullets"):
+                for bullet in exp["bullets"]:
+                    lines.append(f"• {bullet}")
+            lines.append("")
+    
+    if sections.get("projects"):
+        lines.append("PROJECTS")
+        for proj in sections["projects"]:
+            lines.append(f"{proj.get('name', 'Project')}")
+            if proj.get("description"):
+                lines.append(proj["description"])
+            if proj.get("technologies"):
+                lines.append(f"Technologies: {', '.join(proj['technologies'])}")
+            lines.append("")
+    
+    if sections.get("education"):
+        lines.append("EDUCATION")
+        for edu in sections["education"]:
+            lines.append(f"{edu.get('degree', '')} {edu.get('field', '')}".strip())
+            if edu.get("institution"):
+                lines.append(edu["institution"])
+            if edu.get("startDate") or edu.get("endDate"):
+                lines.append(f"{edu.get('startDate', '')} - {edu.get('endDate', '')}".strip())
+            lines.append("")
+    
+    if sections.get("skills"):
+        lines.append("SKILLS")
+        lines.append(", ".join(sections["skills"]))
+        lines.append("")
+    
+    return "\n".join([line for line in lines if line is not None]).strip()
+
+
 def _run_extraction_sync(
     resume_id: int,
     use_ai: bool,
@@ -69,6 +140,9 @@ def _run_extraction_sync(
             
             if not raw_text.strip():
                 raise ValueError("No text could be extracted from the resume")
+            
+            # Store raw text first
+            content.raw_text = raw_text
             
             # Parse to schema
             if use_ai:
@@ -191,6 +265,12 @@ async def get_resume_content(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Resume content not extracted yet. Call /extract first."
         )
+
+    # Backfill raw_text if missing but structured_data exists
+    if not content.raw_text and content.structured_data:
+        content.raw_text = _format_structured_resume(content.structured_data)
+        db.commit()
+        db.refresh(content)
     
     return content
 

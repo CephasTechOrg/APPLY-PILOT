@@ -229,6 +229,7 @@ class ResumeContentResponse(BaseModel):
     id: int
     resume_id: int
     structured_data: Optional[Dict[str, Any]] = None
+    raw_text: Optional[str] = None
     extraction_status: str
     extraction_error: Optional[str] = None
     purpose: Optional[str] = None

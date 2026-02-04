@@ -6,6 +6,7 @@ from urllib.parse import quote, urlsplit, urlunsplit
 from uuid import uuid4
 
 import requests
+from requests import RequestException
 
 from app.core.config import settings
 
@@ -80,7 +81,10 @@ def create_signed_url(object_path: str, expires_in: Optional[int] = None) -> str
 
     last_status = None
     for endpoint in endpoints:
-        response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+        try:
+            response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+        except RequestException as exc:
+            raise StorageError(f"Supabase signed URL request failed: {exc}") from exc
         last_status = response.status_code
         if response.status_code < 300:
             data = response.json()

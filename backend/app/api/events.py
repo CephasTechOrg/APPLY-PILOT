@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
@@ -52,7 +52,7 @@ def _get_application_or_404(
 @router.post("/parse-email", response_model=EmailParseResponse)
 def parse_email(
     application_id: int,
-    request: EmailParseRequest,
+    request: EmailParseRequest = Body(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
